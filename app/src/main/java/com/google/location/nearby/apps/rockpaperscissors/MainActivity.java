@@ -84,11 +84,17 @@ public class MainActivity extends AppCompatActivity {
     private Button paperButton;
     private Button scissorsButton;
 
+    private Button connectWith;
+
     private TextView opponentText;
     private TextView statusText;
     private TextView scoreText;
 
     private EditText mEtMessage;
+
+    // DATA END POINT DISCOVER
+    private String mEndpointId;
+    private DiscoveredEndpointInfo mDiscoveredEndpointInfo;
 
     // Callbacks for receiving payloads
     private final PayloadCallback payloadCallback =
@@ -123,8 +129,13 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onEndpointFound(String endpointId, DiscoveredEndpointInfo info) {
                     Log.i(TAG, "onEndpointFound: endpoint found, connecting");
-                    setStatusText("Connecting with " + info.getEndpointName());
-                    connectionsClient.requestConnection(codeName, endpointId, connectionLifecycleCallback);
+                    /*setStatusText("Connecting with " + info.getEndpointName());
+                    connectionsClient.requestConnection(codeName, endpointId, connectionLifecycleCallback);*/
+                    connectWith.setText(info.getEndpointName());
+                    connectWith.setVisibility(View.VISIBLE);
+                    mDiscoveredEndpointInfo = info;
+                    mEndpointId = endpointId;
+
                 }
 
                 @Override
@@ -139,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.i(TAG, "onConnectionInitiated: accepting connection");
                     connectionsClient.acceptConnection(endpointId, payloadCallback);
                     opponentName = connectionInfo.getEndpointName();
+                    connectWith.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -176,6 +188,8 @@ public class MainActivity extends AppCompatActivity {
         paperButton = findViewById(R.id.paper);
         scissorsButton = findViewById(R.id.scissors);
 
+        connectWith = findViewById(R.id.activity_main_button_connect);
+
         opponentText = findViewById(R.id.opponent_name);
         statusText = findViewById(R.id.status);
         scoreText = findViewById(R.id.score);
@@ -201,8 +215,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        connectionsClient.stopAllEndpoints();
-        resetGame();
+        //connectionsClient.stopAllEndpoints();
+        //resetGame();
 
         super.onStop();
     }
@@ -252,6 +266,11 @@ public class MainActivity extends AppCompatActivity {
 
         connectionsClient.sendPayload(
                 opponentEndpointId, Payload.fromBytes(message.getBytes(UTF_8)));
+    }
+
+    public void connectWith(View view) {
+        setStatusText("Connecting with " + mDiscoveredEndpointInfo.getEndpointName());
+        connectionsClient.requestConnection(codeName, mEndpointId, connectionLifecycleCallback);
     }
 
     /** Disconnects from the opponent and reset the UI. */

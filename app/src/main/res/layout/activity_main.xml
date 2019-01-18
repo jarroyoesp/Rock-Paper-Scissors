@@ -17,6 +17,17 @@
       android:id="@+id/status"
       style="@style/StatusText"/>
 
+  <Button
+      android:id="@+id/activity_main_button_connect"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:visibility="gone"
+      android:onClick="connectWith"
+      android:layout_alignParentRight="true"
+      android:text="Send"
+      style="@style/Widget.AppCompat.Button.Colored"/>
+
+
   <TextView
       android:id="@+id/score"
       android:layout_width="match_parent"
